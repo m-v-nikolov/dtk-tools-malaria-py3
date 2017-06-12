@@ -1,1 +1,1 @@
-this is a string
+VARIABLE = 'abc'
