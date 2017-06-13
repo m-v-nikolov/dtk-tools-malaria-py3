@@ -1,9 +1,7 @@
-#from distutils.core import setup
-#import setuptools
 from setuptools import setup, find_packages
 
 setup(name='malaria',
-      version='1.091',
+      version='$VERSION$',
       packages=find_packages(),
       install_requires=[]
       )
