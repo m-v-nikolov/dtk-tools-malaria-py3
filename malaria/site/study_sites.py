@@ -1,8 +1,8 @@
 import logging
 
-from species import set_larval_habitat, set_species_param, scale_all_habitats
-from ..generic.climate import set_climate_constant
-from ..generic.geography import set_geography
+from dtk.vector.species import set_larval_habitat, set_species_param, scale_all_habitats
+from dtk.generic.climate import set_climate_constant
+from dtk.generic.geography import set_geography
 
 
 class StudySite(object):
