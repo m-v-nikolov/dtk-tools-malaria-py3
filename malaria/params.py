@@ -3,8 +3,8 @@ import copy
 import infection
 import immunity
 import symptoms
-from ..vector.species import set_params_by_species
-from ..interventions.malaria_drugs import drug_params
+from dtk.vector.species import set_params_by_species
+from dtk.interventions.malaria_drugs import drug_params
 
 # --------------------------------------------------------------
 # Malaria disease + drug parameters
