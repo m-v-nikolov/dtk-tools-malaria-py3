@@ -8,6 +8,8 @@ for root, dirnames, filenames in os.walk('malaria'):
     for filter in include_filters:
         for filename in fnmatch.filter(filenames, filter):
             included_files.append(os.path.join(root, filename))
+if len(included_files) == 0:
+    raise Exception("No non-py files found to include")
 
 setup(name='malaria',
       version='$VERSION$',
