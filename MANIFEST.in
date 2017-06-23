@@ -1,1 +1,1 @@
-recursive-include malaria *.txt *.md *.csv *.py
+recursive-include malaria *
