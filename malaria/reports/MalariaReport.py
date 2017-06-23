@@ -1,4 +1,4 @@
-from CustomReport import BaseReport, BaseEventReport, BaseEventReportIntervalOutput
+from dtk.utils.reports.CustomReport import BaseReport, BaseEventReport, BaseEventReportIntervalOutput
 
 
 class MalariaReport(BaseEventReportIntervalOutput):
