@@ -1,5 +1,5 @@
-from dtk.interventions.malaria_drugs import drug_configs_from_code
-from dtk.interventions.malaria_diagnostic import add_diagnostic_survey, add_triggered_survey
+from malaria.interventions.malaria_drugs import drug_configs_from_code
+from malaria.interventions.malaria_diagnostic import add_diagnostic_survey, add_triggered_survey
 from dtk.interventions.intervention_states import *
 from copy import deepcopy, copy
 
