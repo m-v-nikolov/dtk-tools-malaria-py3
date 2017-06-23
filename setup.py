@@ -12,6 +12,6 @@ for root, dirnames, filenames in os.walk('malaria'):
 setup(name='malaria',
       version='$VERSION$',
       packages=find_packages(),
-      package_data={'malaria': included_files},
+      package_data={'': included_files},
       install_requires=[]
       )
