@@ -2,7 +2,7 @@ import os
 
 from simtools.SetupParser import SetupParser
 from dtk.utils.parsers.JSON import json2dict
-from malaria.site.study_sites import StudySite, set_habitat_scale
+from dtk.vector.study_sites import StudySite, set_habitat_scale
 
 params = {
     "Antibody_CSP_Decay_Days": 90,
