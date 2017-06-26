@@ -1,19 +1,9 @@
 from setuptools import setup, find_packages
-
-import fnmatch
-import os
-included_files = []
-include_filters = ['*.txt', '*.md', '*.csv']
-for root, dirnames, filenames in os.walk('malaria'):
-    for filter in include_filters:
-        for filename in fnmatch.filter(filenames, filter):
-            included_files.append(os.path.join(root, filename))
-if len(included_files) == 0:
-    raise Exception("No non-py files found to include")
+from simtools.Utilities.General import files_in_dir
 
 setup(name='malaria',
       version='$VERSION$',
       packages=find_packages(),
-      package_data={'': included_files},
+      package_data={'': files_in_dir('malaria')},
       install_requires=[]
       )
