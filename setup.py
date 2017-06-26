@@ -5,5 +5,5 @@ setup(name='malaria',
       version='$VERSION$',
       packages=find_packages(),
       package_data={'': files_in_dir('malaria')},
-      install_requires=[]
+      install_requires=['dtk-tools']
       )
