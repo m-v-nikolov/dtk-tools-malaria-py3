@@ -1,11 +1,17 @@
 import logging
 
 from calibtool.study_sites.IncidenceCalibSite import IncidenceCalibSite
+from calibtool.study_sites.site_setup_functions import config_setup_fn, summary_report_fn, site_input_eir_fn, add_treatment_fn
 
 logger = logging.getLogger(__name__)
 
 
 class DielmoCalibSite(IncidenceCalibSite):
+
+    fine_age_bins = [
+            0.08333, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+            11, 12, 13, 14, 15, 20, 25, 30, 40, 50, 60, 100
+        ]
 
     reference_dict = {
 
@@ -31,6 +37,19 @@ class DielmoCalibSite(IncidenceCalibSite):
             0.5, 0.25, 0.1, 0.2, 0.4,
             0.3, 0.2, 0.2, 0.2, 0.15, 0.15, 0.15]
     }
+
+    def get_setup_functions(self):
+        setup_fns = super(DielmoCalibSite, self).get_setup_functions()
+        setup_fns.append(config_setup_fn(duration=365 * 70 + 1))  # 60 years (with leap years)
+        setup_fns.append(summary_report_fn(start=0, interval=365.0, age_bins=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 25, 30, 40, 50, 60, 100]))
+        setup_fns.append(site_input_eir_fn(self.name, birth_cohort=True))
+        setup_fns.append(add_treatment_fn(start=0, drug=['Artemether'],
+                                          targets=[{'trigger': 'NewClinicalCase',
+                                                    'coverage': 1, 'seek': 0.5, 'rate': 0.3}]))
+        setup_fns.append(lambda cb: cb.update_params({'Demographics_Filenames': [
+            'Calibration\\birth_cohort_demographics.compiled.json']}))
+
+        return setup_fns
 
     def __init__(self):
         super(DielmoCalibSite, self).__init__('Dielmo')
