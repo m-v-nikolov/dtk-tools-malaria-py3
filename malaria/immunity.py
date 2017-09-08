@@ -1,3 +1,4 @@
+# This comment is only a test, still
 import os
 
 from simtools.SetupParser import SetupParser
