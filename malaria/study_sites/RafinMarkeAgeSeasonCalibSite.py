@@ -10,6 +10,12 @@ from calibtool.study_sites.DensityCalibSite import DensityCalibSite
 
 logger = logging.getLogger(__name__)
 
+class update_params:
+    def __init__(self, params):
+        self.params = params
+
+    def __call__(self, cb):
+        return cb.update_params(self.params)
 
 class RafinMarkeAgeSeasonCalibSite(DensityCalibSite):
     metadata = {
@@ -38,11 +44,10 @@ class RafinMarkeAgeSeasonCalibSite(DensityCalibSite):
         setup_fns = super(RafinMarkeAgeSeasonCalibSite, self).get_setup_functions()
         setup_fns.append(config_setup_fn(duration=365 * 70))  # 60 years (with leap years)
         setup_fns.append(summary_report_fn(interval=365.0 / 12, description='Monthly_Report',
-                                           parasitemia_bins=[0.0, 16.0, 70.0, 409.0, 4000000.0],
+                                           #parasitemia_bins=[0.0, 16.0, 70.0, 409.0, 4000000.0],
                                            age_bins=[1.0, 4.0, 8.0, 18.0, 28.0, 43.0, 400000.0]))
         setup_fns.append(site_input_eir_fn(self.name, birth_cohort=True))
-        setup_fns.append(lambda cb: cb.update_params({'Demographics_Filenames': ['Calibration\\birth_cohort_demographics.compiled.json'],
-                                                      }))
+        setup_fns.append(update_params({'Demographics_Filenames': ['Calibration\\birth_cohort_demographics.compiled.json']}))
         return setup_fns
 
     def __init__(self):

@@ -5,6 +5,12 @@ from calibtool.study_sites.site_setup_functions import config_setup_fn, summary_
 
 logger = logging.getLogger(__name__)
 
+class update_params:
+    def __init__(self, params):
+        self.params = params
+
+    def __call__(self, cb):
+        return cb.update_params(self.params)
 
 class DielmoCalibSite(IncidenceCalibSite):
 
@@ -46,8 +52,7 @@ class DielmoCalibSite(IncidenceCalibSite):
         setup_fns.append(add_treatment_fn(start=0, drug=['Artemether'],
                                           targets=[{'trigger': 'NewClinicalCase',
                                                     'coverage': 1, 'seek': 0.5, 'rate': 0.3}]))
-        setup_fns.append(lambda cb: cb.update_params({'Demographics_Filenames': [
-            'Calibration\\birth_cohort_demographics.compiled.json']}))
+        setup_fns.append(update_params({'Demographics_Filenames': ['Calibration\\birth_cohort_demographics.compiled.json']}))
 
         return setup_fns
 
