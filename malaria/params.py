@@ -1,8 +1,6 @@
 import copy
 
-import infection
-import immunity
-import symptoms
+from malaria import infection, immunity, symptoms
 from dtk.vector.species import set_params_by_species
 from malaria.interventions.malaria_drugs import drug_params
 
