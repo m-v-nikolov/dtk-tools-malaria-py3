@@ -1,6 +1,7 @@
 import copy
 
 from malaria.interventions.malaria_drug_campaigns import fmda_cfg
+from dtk.interventions.irs import node_irs_config
 
 def add_reactive_node_IRS(config_builder, start, duration=10000, trigger_coverage=1.0, irs_coverage=1.0,
                           node_selection_type='DISTANCE_ONLY',

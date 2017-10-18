@@ -117,7 +117,8 @@ def add_drug_campaign(cb, campaign_type, drug_code, start_days, coverage=1.0, re
     return { 'drug_campaign.type' : campaign_type,
              'drug_campaign.drugs': drug_code,
              'drug_campaign.trigger_coverage' : trigger_coverage,
-             'drug_campaign.coverage' : coverage
+             'drug_campaign.coverage' : coverage,
+             'drug_campaign.start_days' : start_days
              }
 
 

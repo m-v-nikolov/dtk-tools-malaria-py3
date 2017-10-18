@@ -1,5 +1,4 @@
 from dtk.utils.reports.CustomReport import BaseReport, BaseEventReport, BaseEventReportIntervalOutput
-import numpy as np
 
 
 class MalariaReport(BaseEventReportIntervalOutput):
@@ -13,8 +12,6 @@ class MalariaReport(BaseEventReportIntervalOutput):
                  report_description="",
                  nodeset_config={"class": "NodeSetAll"},
                  age_bins=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1000],
-                 parasitemia_bins=[],
-                 infection_bins=[],
                  max_number_reports=15,
                  reporting_interval=73,
                  type=""):
@@ -22,35 +19,25 @@ class MalariaReport(BaseEventReportIntervalOutput):
                                                report_description, nodeset_config, max_number_reports,
                                                reporting_interval, type)
         self.age_bins = age_bins
-        self.parasitemia_bins = parasitemia_bins
-        self.infection_bins = infection_bins
 
     def to_dict(self):
         d = super(MalariaReport, self).to_dict()
         d["Age_Bins"] = self.age_bins
-        d["Parasitemia_Bins"] = self.parasitemia_bins
-        d["Infectiousness_Bins"] = self.infection_bins
         return d
 
 
 default_age_bins = [1.0 / 12, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
                     11, 12, 13, 14, 15, 20, 25, 30, 40, 50, 60, 1000]
-default_parasitemia_bins = [50.0, 500.0, 5000.0, np.inf]
-default_infection_bins = [20.0, 40.0, 60.0, 80.0, 100.0]
 
 
 def add_summary_report(cb, start=0, interval=365, nreports=10000,
                        description='AnnualAverage',
                        age_bins=default_age_bins,
-                       parasitemia_bins=default_parasitemia_bins,
-                       infection_bins=default_infection_bins,
                        nodes={"class": "NodeSetAll"}):
     summary_report = MalariaReport(event_trigger_list=['EveryUpdate'],
                                    start_day=start,
                                    report_description=description,
                                    age_bins=age_bins,
-                                   parasitemia_bins=parasitemia_bins,
-                                   infection_bins=infection_bins,
                                    max_number_reports=nreports,
                                    reporting_interval=interval,
                                    nodeset_config=nodes)
@@ -60,13 +47,11 @@ def add_summary_report(cb, start=0, interval=365, nreports=10000,
 
 def add_immunity_report(cb, start=0, interval=365, nreports=10000,
                         description='AnnualAverage',
-                        parasitemia_bins=default_parasitemia_bins,
                         age_bins=default_age_bins):
     immunity_report = MalariaReport(event_trigger_list=['EveryUpdate'],
                                     start_day=start,
                                     report_description=description,
                                     age_bins=age_bins,
-                                    parasitemia_bins=parasitemia_bins,
                                     max_number_reports=nreports,
                                     reporting_interval=interval)
     immunity_report.type = "MalariaImmunityReport"
