@@ -1,4 +1,6 @@
 import random
+from dtk.interventions.triggered_campaign_delay_event import triggered_campaign_delay_event
+
 
 positive_broadcast = {
         "class": "BroadcastEvent",
@@ -8,7 +10,7 @@ positive_broadcast = {
 
 def add_diagnostic_survey(cb, coverage=1, repetitions=1, tsteps_btwn=365, target='Everyone', start_day=0,
                           diagnostic_type='NewDetectionTech', diagnostic_threshold=40, event_name="Diagnostic Survey",
-                          nodes={"class": "NodeSetAll"}, positive_diagnosis_configs=[],
+                          node_cfg={"class": "NodeSetAll"}, positive_diagnosis_configs=[],
                           received_test_event='Received_Test', IP_restrictions=[], NP_restrictions=[],
                           pos_diag_IP_restrictions=[], trigger_condition_list=[], listening_duration=-1, triggered_campaign_delay=0 ):
     """
@@ -55,105 +57,53 @@ def add_diagnostic_survey(cb, coverage=1, repetitions=1, tsteps_btwn=365, target
             intervention_cfg["Positive_Diagnosis_Config"]["Property_Restrictions_Within_Node"] = pos_diag_IP_restrictions
 
     if trigger_condition_list:
-        sorta_unique_id = random.randrange(10000)
-        for repetition in range(0, repetitions):
-            # set up trigger event that triggers every person to send out the the trigger for the repetition's listeners
-            if repetition == 0 and repetitions > 1:
-                trigger_event = {
-                    "class": "CampaignEvent",
-                    "Start_Day": start_day,
-                    "Nodeset_Config": nodes,
-                    "Event_Coordinator_Config": {
-                        "class": "StandardInterventionDistributionEventCoordinator",
-                        "Intervention_Config": {
-                            "class": "NodeLevelHealthTriggeredIV",
-                            "Trigger_Condition_List": trigger_condition_list,
-                            "Duration": listening_duration,
-                            "Target_Residents_Only": 1,
-                            "Actual_IndividualIntervention_Config": {
-                                "class": "MultiInterventionDistributor",
-                                "Intervention_List": []
+        event_to_send_out = random.randrange(100000)
+        for x in range(repetitions): # there is at least one repetition, so it always makes at least 1 triggered event broadcast.
+            # create a trigger for each of the delays.
+            trigger_condition_list = [str(triggered_campaign_delay_event(cb, start_day, node_cfg,
+                                                                         triggered_campaign_delay + x * tsteps_btwn,
+                                                                         trigger_condition_list,
+                                                                         listening_duration, event_to_send_out))]
+
+        survey_event = {"class": "CampaignEvent",
+                        "Start_Day": start_day,
+                        "Event_Name": event_name,
+                        "Nodeset_Config": node_cfg,
+                        "Event_Coordinator_Config": {
+                            "class": "StandardInterventionDistributionEventCoordinator",
+                            "Number_Distributions": -1,
+                            "Intervention_Config":
+                                {
+                                    "class": "NodeLevelHealthTriggeredIV",
+                                    "Trigger_Condition_List": trigger_condition_list,
+                                    "Target_Residents_Only": 1,
+                                    "Duration": listening_duration,
+                                    "Demographic_Coverage": coverage,
+                                    "Target_Demographic": target,
+                                    "Property_Restrictions_Within_Node": IP_restrictions,
+                                    "Node_Property_Restrictions": NP_restrictions,
+                                    "Actual_IndividualIntervention_Config":
+                                        {
+                                            "class": "MultiInterventionDistributor",
+                                            "Intervention_List": [
+                                                {
+                                                 "class": "BroadcastEvent",
+                                                 "Broadcast_Event": received_test_event
+                                                },
+                                                intervention_cfg
+                                            ]
+                                        }
+                                 },
                             }
                         }
-                    }
-                }
-                for x in range(1, repetitions):
-                    delayed_later_event_trigger = {
-                        "class": "DelayedIntervention",
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": triggered_campaign_delay + tsteps_btwn * x,
-                        "Actual_IndividualIntervention_Configs":
-                            [
-                                {
-                                    "class": "BroadcastEvent",
-                                    "Broadcast_Event": str(sorta_unique_id) + "_" + str(x)
-                                }
-                            ]
-                    }
-                    trigger_event['Event_Coordinator_Config']['Intervention_Config'][
-                        "Actual_IndividualIntervention_Config"]["Intervention_List"].append(delayed_later_event_trigger)
 
-                cb.add_event(trigger_event)
+        if isinstance(target, dict) and all([k in target.keys() for k in ['agemin', 'agemax']]):
+            survey_event["Event_Coordinator_Config"]['Intervention_Config'].update({
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": target['agemin'],
+                "Target_Age_Max": target['agemax']})
 
-            survey_event = {"class": "CampaignEvent",
-                            "Start_Day": start_day,
-                            "Event_Name": event_name,
-                            "Nodeset_Config": nodes,
-                            "Event_Coordinator_Config": {
-                                "class": "StandardInterventionDistributionEventCoordinator",
-                                "Number_Distributions": -1,
-                                "Intervention_Config":
-                                    {
-                                        "class": "NodeLevelHealthTriggeredIV",
-                                        "Blackout_On_First_Occurrence": 1,
-                                        "Trigger_Condition_List": trigger_condition_list,
-                                        "Target_Residents_Only": 1,
-                                        "Duration": listening_duration,
-                                        "Demographic_Coverage": coverage,
-                                        "Actual_IndividualIntervention_Config":
-                                            {
-                                                "class": "DelayedIntervention",
-                                                "Delay_Distribution": "FIXED_DURATION",
-                                                "Delay_Period": triggered_campaign_delay,
-                                                "Actual_IndividualIntervention_Configs":
-                                                    [
-                                                        {
-                                                            "class": "MultiInterventionDistributor",
-                                                            "Intervention_List": [
-                                                                {
-                                                                 "class": "BroadcastEvent",
-                                                                 "Broadcast_Event": received_test_event
-                                                                },
-                                                                  intervention_cfg
-                                                            ]
-
-                                                        }
-                                                    ]
-                                            }
-                                     },
-                                }
-                            }
-            if repetitions > 1:
-                if repetition > 0:
-                    survey_event['Event_Coordinator_Config']['Intervention_Config']["Trigger_Condition_List"] = [
-                        str(sorta_unique_id) + "_" + str(repetition)]
-
-            if IP_restrictions:
-                survey_event['Event_Coordinator_Config']['Intervention_Config']["Property_Restrictions_Within_Node"] = IP_restrictions
-
-            if NP_restrictions:
-                survey_event['Event_Coordinator_Config']['Intervention_Config']['Node_Property_Restrictions'] = NP_restrictions
-
-            if isinstance(target, dict) and all([k in target.keys() for k in ['agemin', 'agemax']]):
-                survey_event["Event_Coordinator_Config"]['Intervention_Config'].update({
-                    "Target_Demographic": "ExplicitAgeRanges",
-                    "Target_Age_Min": target['agemin'],
-                    "Target_Age_Max": target['agemax']})
-            else:
-                survey_event["Event_Coordinator_Config"]['Intervention_Config'].update({
-                    "Target_Demographic": target})  # default is Everyone
-
-            cb.add_event(survey_event)
+        cb.add_event(survey_event)
 
     else:
         survey_event = { "class" : "CampaignEvent",
@@ -161,33 +111,29 @@ def add_diagnostic_survey(cb, coverage=1, repetitions=1, tsteps_btwn=365, target
                          "Event_Name" : event_name,
                          "Event_Coordinator_Config": {
                              "class": "StandardInterventionDistributionEventCoordinator",
+                             "Node_Property_Restrictions": NP_restrictions,
+                             "Property_Restrictions_Within_Node": IP_restrictions,
                              "Number_Distributions": -1,
                              "Number_Repetitions": repetitions,
                              "Timesteps_Between_Repetitions": tsteps_btwn,
                              "Demographic_Coverage": coverage,
+                             "Target_Demographic": target,
                              "Intervention_Config": {
                                  "Intervention_List" : [
                                      { "class": "BroadcastEvent",
-                                     "Broadcast_Event": received_test_event },
-                                      intervention_cfg ] ,
-                                "class" : "MultiInterventionDistributor" }
+                                       "Broadcast_Event": received_test_event },
+                                                           intervention_cfg ] ,
+                                 "class" : "MultiInterventionDistributor" }
                              },
-                         "Nodeset_Config": nodes
+                         "Nodeset_Config": node_cfg
                          }
-
-        if IP_restrictions :
-            survey_event['Event_Coordinator_Config']["Property_Restrictions_Within_Node"] = IP_restrictions
-
-        if NP_restrictions:
-            survey_event['Event_Coordinator_Config']['Node_Property_Restrictions'] = NP_restrictions
 
         if isinstance(target, dict) and all([k in target.keys() for k in ['agemin','agemax']]) :
             survey_event["Event_Coordinator_Config"].update({
                     "Target_Demographic": "ExplicitAgeRanges",
                     "Target_Age_Min": target['agemin'],
                     "Target_Age_Max": target['agemax'] })
-        else :
-            survey_event["Event_Coordinator_Config"].update({
-                    "Target_Demographic": target } ) # default is Everyone
+
         cb.add_event(survey_event)
+
     return
