@@ -57,13 +57,15 @@ def add_diagnostic_survey(cb, coverage=1, repetitions=1, tsteps_btwn=365, target
             intervention_cfg["Positive_Diagnosis_Config"]["Property_Restrictions_Within_Node"] = pos_diag_IP_restrictions
 
     if trigger_condition_list:
-        event_to_send_out = random.randrange(100000)
-        for x in range(repetitions): # there is at least one repetition, so it always makes at least 1 triggered event broadcast.
-            # create a trigger for each of the delays.
-            trigger_condition_list = [str(triggered_campaign_delay_event(cb, start_day, node_cfg,
-                                                                         triggered_campaign_delay + x * tsteps_btwn,
-                                                                         trigger_condition_list,
-                                                                         listening_duration, event_to_send_out))]
+        if repetitions > 1 or triggered_campaign_delay > 0:
+            event_to_send_out = random.randrange(100000)
+            for x in range(repetitions): # there is at least one repetition, so it always makes at least 1 triggered event broadcast.
+                # create a trigger for each of the delays.
+                triggered_campaign_delay_event(cb, start_day, node_cfg,
+                                                                             triggered_campaign_delay + x * tsteps_btwn,
+                                                                             trigger_condition_list,
+                                                                             listening_duration, event_to_send_out)
+                trigger_condition_list = [event_to_send_out]
 
         survey_event = {"class": "CampaignEvent",
                         "Start_Day": start_day,
