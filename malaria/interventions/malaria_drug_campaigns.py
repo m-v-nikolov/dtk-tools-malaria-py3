@@ -114,21 +114,18 @@ def add_drug_campaign(cb, campaign_type, drug_code, start_days, coverage=1.0, re
     elif campaign_type == 'rfMSAT':
         add_rfMSAT(cb, start_days[0], coverage, drug_configs, receiving_drugs_event, interval, treatment_delay,
                    trigger_coverage, diagnostic_threshold, fmda_radius, node_selection_type, snowballs, node_cfg,
-                   expire_recent_drugs, node_property_restrictions, ind_property_restrictions, trigger_condition_list,
-                   listening_duration, triggered_campaign_delay)
+                   expire_recent_drugs, node_property_restrictions, ind_property_restrictions)
 
     elif campaign_type == 'rfMDA':
         add_rfMDA(cb, start_days[0], coverage, drug_configs, receiving_drugs_event, interval, treatment_delay,
                   trigger_coverage, fmda_radius, node_selection_type, node_cfg, expire_recent_drugs,
-                  node_property_restrictions, ind_property_restrictions, trigger_condition_list, listening_duration,
-                  triggered_campaign_delay)
+                  node_property_restrictions, ind_property_restrictions)
 
     elif campaign_type in ['borderscreen']:
         # PROBABLY DOES NOT WORK --- WANT ONLY PEOPLE COMING IN FROM WORK NODE,
         # NOT DEPARTING OR RETURNING FROM LOCAL NODES
         add_borderscreen(cb, start_days[0], coverage, drug_configs, receiving_drugs_event, interval, treatment_delay,
-                         trigger_coverage, diagnostic_threshold, fmda_radius, node_selection_type, snowballs, node_cfg,
-                         expire_recent_drugs, trigger_condition_list, triggered_campaign_delay, listening_duration)
+                         trigger_coverage, diagnostic_threshold, fmda_radius, node_selection_type, snowballs, node_cfg)
 
     else:
         pass
