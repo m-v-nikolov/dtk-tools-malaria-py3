@@ -383,6 +383,8 @@ def add_rfMSAT(cb, start_day, coverage, drug_configs, receiving_drugs_event, int
                          "Intervention_Config": {
                              "class": "NodeLevelHealthTriggeredIV",
                              "Blackout_On_First_Occurrence": 1,
+                             "Blackout_Event_Trigger": "rfMSAT_Blackout_Event_Trigger",
+                             "Blackout_Period": 1,
                              "Demographic_Coverage": trigger_coverage,
                              "Node_Property_Restrictions": node_property_restrictions,
                              "Trigger_Condition_List": ["Received_Treatment"],
