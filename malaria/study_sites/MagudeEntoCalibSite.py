@@ -13,7 +13,7 @@ class MagudeEntoCalibSite(EntomologyCalibSite):
     metadata = {
         'village': 'Magude',
         'months': [calendar.month_abbr[i] for i in range(1, 13)],
-        'species': ['gambiae', 'funestus']
+        'species': ['funestus']
     }
 
     def get_reference_data(self, reference_type):
