@@ -4,10 +4,17 @@ import numpy as np
 import calendar
 from calibtool.analyzers.Helpers import ento_data
 
-from calibtool.study_sites.EntomologyCalibSite import EntomologySpatialCalibSite
+from calibtool.study_sites.EntomologySpatialCalibSite import EntomologySpatialCalibSite
 import glob
 
 logger = logging.getLogger(__name__)
+
+class update_params:
+    def __init__(self, params):
+        self.params = params
+
+    def __call__(self, cb):
+        return cb.update_params(self.params)
 
 
 class MoineSpatialCalibSite(EntomologySpatialCalibSite):
@@ -18,11 +25,12 @@ class MoineSpatialCalibSite(EntomologySpatialCalibSite):
     }
 
     def get_setup_functions(self):
+        setup_fns = super(MoineSpatialCalibSite, self).get_setup_functions()
 
         specs = ['funestus']
 
-        setup_fns.append(vector_stats_report_fn())
-        setup_fns.append(lambda cb: cb.update_params(
+        # setup_fns.append(vector_stats_report_fn())
+        setup_fns.append(update_params(
             {
               'Antigen_Switch_Rate': pow(10, -9.116590124),
               'Base_Gametocyte_Production_Rate': 0.06150582,
